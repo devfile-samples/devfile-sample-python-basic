@@ -7,17 +7,20 @@
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 python/sample-basic
+# docker run -i --rm -p 8081:8081 python/sample-basic
 ####
 FROM python:slim
 
 WORKDIR /projects
-COPY . .
+
+COPY requirements.txt requirements.txt
 
 RUN python3 -m venv venv
 RUN . venv/bin/activate
 RUN pip install -r requirements.txt
 
-EXPOSE 8080
-CMD [ "python", "app.py"]
+COPY . .
+
+EXPOSE 8081
+CMD [ "waitress-serve", "--port=8081", "app:app"]
 
