@@ -13,10 +13,11 @@ FROM python:slim
 
 WORKDIR /projects
 
-COPY requirements.txt requirements.txt
-
 RUN python3 -m venv venv
 RUN . venv/bin/activate
+
+# optimize image caching
+COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY . .
