@@ -1,25 +1,54 @@
-schemaVersion: 2.0.0
+schemaVersion: 2.2.0
 metadata:
   name: python
   version: 1.0.0
-  attributes:
-    alpha.build-context: .
-    alpha.build-dockerfile: docker/Dockerfile
 starterProjects:
   - name: python-example
     git:
       remotes:
         origin: https://github.com/odo-devfiles/python-ex
+variables:
+  CONTAINER_IMAGE: python-image:latest
+  COMPONENT_NAME: my-python
+  PORT: "8081"
 components:
-  - name: buildguidance
+  - name: outerloop-build
     attributes:
       tool: console-import
-    container:
-      image: buildguidanceimage-placeholder
-      memoryLimit: 1024Mi
-      endpoints:
-        - name: http-8081
-          targetPort: 8081
+    image:
+      imageName: "{{CONTAINER_IMAGE}}"
+      dockerfile:
+        uri: docker/Dockerfile
+        buildContext: .
+        rootRequired: false
+  - name: outerloop-deploy
+    kubernetes:
+      inlined: |
+        kind: Deployment
+        apiVersion: apps/v1
+        metadata:
+          name: {{COMPONENT_NAME}}
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              app: node-app
+          template:
+            metadata:
+              labels:
+                app: node-app
+            spec:
+              containers:
+                - name: {{COMPONENT_NAME}}
+                  image: {{CONTAINER_IMAGE}}
+                  ports:
+                    - name: http
+                      containerPort: {{PORT}}
+                      protocol: TCP
+                  resources:
+                    limits:
+                      memory: "128Mi"
+                      cpu: "500m"
   - name: py-web
     container:
       image: quay.io/eclipse/che-python-3.7:nightly
