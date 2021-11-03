@@ -2,6 +2,8 @@ schemaVersion: 2.2.0
 metadata:
   name: python
   version: 1.0.0
+attributes:
+    alpha.dockerimage-port: 8081
 starterProjects:
   - name: python-example
     git:
@@ -32,11 +34,11 @@ components:
           replicas: 1
           selector:
             matchLabels:
-              app: node-app
+              app: python-app
           template:
             metadata:
               labels:
-                app: node-app
+                app: python-app
             spec:
               containers:
                 - name: {{COMPONENT_NAME}}
