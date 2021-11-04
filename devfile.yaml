@@ -2,6 +2,8 @@ schemaVersion: 2.2.0
 metadata:
   name: python
   version: 1.0.0
+  provider: Red Hat
+  supportUrl: https://github.com/devfile-samples/devfile-support#support-information
 attributes:
     alpha.dockerimage-port: 8081
 starterProjects:
@@ -9,48 +11,17 @@ starterProjects:
     git:
       remotes:
         origin: https://github.com/odo-devfiles/python-ex
-variables:
-  CONTAINER_IMAGE: python-image:latest
-  COMPONENT_NAME: my-python
-  PORT: "8081"
 components:
   - name: outerloop-build
-    attributes:
-      tool: console-import
     image:
-      imageName: "{{CONTAINER_IMAGE}}"
+      imageName: python-image:latest
       dockerfile:
         uri: docker/Dockerfile
         buildContext: .
         rootRequired: false
   - name: outerloop-deploy
     kubernetes:
-      inlined: |
-        kind: Deployment
-        apiVersion: apps/v1
-        metadata:
-          name: {{COMPONENT_NAME}}
-        spec:
-          replicas: 1
-          selector:
-            matchLabels:
-              app: python-app
-          template:
-            metadata:
-              labels:
-                app: python-app
-            spec:
-              containers:
-                - name: {{COMPONENT_NAME}}
-                  image: {{CONTAINER_IMAGE}}
-                  ports:
-                    - name: http
-                      containerPort: {{PORT}}
-                      protocol: TCP
-                  resources:
-                    limits:
-                      memory: "128Mi"
-                      cpu: "500m"
+      uri: outerloop-deploy.yaml
   - name: py-web
     container:
       image: quay.io/eclipse/che-python-3.7:nightly
