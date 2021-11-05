@@ -4,7 +4,7 @@ metadata:
   version: 1.0.0
   provider: Red Hat
   supportUrl: https://github.com/devfile-samples/devfile-support#support-information
-attributes:
+  attributes:
     alpha.dockerimage-port: 8081
 starterProjects:
   - name: python-example
@@ -52,3 +52,17 @@ commands:
       component: py-web
       group:
         kind: debug
+  - id: build-image
+    apply:
+      component: outerloop-build
+  - id: deployk8s
+    apply:
+      component: outerloop-deploy
+  - id: deploy
+    composite:
+      commands:
+        - build-image
+        - deployk8s
+      group:
+        kind: deploy
+        isDefault: true
