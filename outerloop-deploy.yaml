@@ -1,0 +1,25 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: my-python
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-app
+  template:
+    metadata:
+      labels:
+        app: python-app
+    spec:
+      containers:
+        - name: my-python
+          image: python-image:latest
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
