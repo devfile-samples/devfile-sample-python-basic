@@ -1,6 +1,8 @@
 schemaVersion: 2.2.0
 metadata:
   name: python
+  projectType: python
+  language: python
   version: 1.0.0
   provider: Red Hat
   supportUrl: https://github.com/devfile-samples/devfile-support#support-information
