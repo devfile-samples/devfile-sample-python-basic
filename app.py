@@ -1,5 +1,5 @@
 from flask import Flask
-from waitress import serve
+import os
 
 app = Flask(__name__)
 
@@ -8,4 +8,6 @@ def hello():
     return "Hello World!"
 
 if __name__ == '__main__':
-    serve(app, host='0.0.0.0', port=8080)
+    port = int(os.environ.get('FLASK_PORT')) or 8080
+
+    app.run(port=port,host='0.0.0.0')
