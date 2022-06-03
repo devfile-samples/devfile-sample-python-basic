@@ -1,4 +1,4 @@
-FROM python:slim
+FROM quay.io/devfile/python:slim
 
 # By default, listen on port 8081
 EXPOSE 8081/tcp
