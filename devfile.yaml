@@ -37,7 +37,7 @@ components:
       deployment/memoryRequest: 50Mi
       deployment/container-port: 8081
     kubernetes:
-      uri: outerloop-deploy.yaml
+      uri: outerloop.yaml
 commands:
   - id: build-image
     apply:
