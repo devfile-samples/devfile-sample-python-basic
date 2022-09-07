@@ -39,7 +39,7 @@ components:
     kubernetes:
       uri: outerloop.yaml
       endpoints:
-      - name: http-python
+      - name: http-outerloop
         targetPort: 8081
         path: /
 commands:
