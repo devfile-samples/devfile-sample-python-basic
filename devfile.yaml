@@ -38,6 +38,10 @@ components:
       deployment/container-port: 8081
     kubernetes:
       uri: outerloop.yaml
+      endpoints:
+      - name: http-python
+        targetPort: 8081
+        path: /
 commands:
   - id: build-image
     apply:
