@@ -1,16 +1,25 @@
 schemaVersion: 2.2.0
 metadata:
   name: python
-  projectType: python
-  language: python
-  version: 1.0.0
+  projectType: Python
+  displayName: Python
+  icon: https://raw.githubusercontent.com/devfile-samples/devfile-stack-icons/main/python.svg
+  description:
+    'Python is an interpreted, object-oriented, high-level programming language with dynamic semantics.
+    Its high-level built in data structures, combined with dynamic typing and dynamic binding, make it very attractive for Rapid Application Development, as well as for use as a scripting or glue language to connect existing components together.'
+  language: Python
+  version: 1.0.1
   provider: Red Hat
+  tags:
+    - Python
+    - Pip
+    - Flask
   supportUrl: https://github.com/devfile-samples/devfile-support#support-information
   attributes:
     alpha.dockerimage-port: 8081
 parent:
   id: python
-  registryUrl: "https://registry.devfile.io"
+  registryUrl: 'https://registry.devfile.io'
 components:
   - name: outerloop-build
     image:
@@ -22,7 +31,7 @@ components:
   - name: outerloop-deploy
     attributes:
       deployment/replicas: 1
-      deployment/cpuLimit: "100m"
+      deployment/cpuLimit: '100m'
       deployment/cpuRequest: 10m
       deployment/memoryLimit: 100Mi
       deployment/memoryRequest: 50Mi
