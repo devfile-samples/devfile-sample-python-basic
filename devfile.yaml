@@ -21,14 +21,14 @@ parent:
   id: python
   registryUrl: 'https://registry.devfile.io'
 components:
-  - name: outerloop-build
+  - name: image-build
     image:
       imageName: python-image:latest
       dockerfile:
         uri: docker/Dockerfile
         buildContext: .
         rootRequired: false
-  - name: outerloop-deploy
+  - name: kubernetes-deploy
     attributes:
       deployment/replicas: 1
       deployment/cpuLimit: '100m'
@@ -37,14 +37,18 @@ components:
       deployment/memoryRequest: 50Mi
       deployment/container-port: 8081
     kubernetes:
-      uri: outerloop-deploy.yaml
+      uri: deploy.yaml
+      endpoints:
+      - name: http-8081
+        targetPort: 8081
+        path: /
 commands:
   - id: build-image
     apply:
-      component: outerloop-build
+      component: image-build
   - id: deployk8s
     apply:
-      component: outerloop-deploy
+      component: kubernetes-deploy
   - id: deploy
     composite:
       commands:

@@ -23,3 +23,16 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "500m"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: my-python
+spec:
+ports:
+  - name: http-8081
+    port: 8081
+    protocol: TCP
+    targetPort: 8081
+selector:
+  app: python-app
