@@ -28,6 +28,8 @@ spec:
     value: '{{revision}}'
   - name: hermetic
     value: "true"
+  - name: prefetch-input
+    value: pip
   pipelineSpec:
     finally:
     - name: show-summary
