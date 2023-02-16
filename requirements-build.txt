@@ -1,2 +1,1 @@
-setuptools>=40.8.0
-wheel
+wheel==0.38.4
