@@ -36,6 +36,8 @@ spec:
         value: $(tasks.clone-repository.results.url)?rev=$(tasks.clone-repository.results.commit)
       - name: image-url
         value: $(params.output-image)
+      - name: hermetic
+        value: "true"
       taskRef:
         bundle: quay.io/redhat-appstudio-tekton-catalog/task-summary:0.1@sha256:1dfe8966b3f2d377f068efa61fe403ef84d8f2d63374d8ba08bca95db0b919eb
         name: summary
