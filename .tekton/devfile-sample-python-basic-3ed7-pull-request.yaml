@@ -113,7 +113,7 @@ spec:
       - name: pipelinerun-uid
         value: $(context.pipelineRun.uid)
       taskRef:
-        bundle: quay.io/redhat-appstudio-tekton-catalog/task-init:0.1@sha256:180a3363aa7813b99bc2fc9bc7953d2ec485155e570cfb403d2e71eca226b6e0
+        bundle: registry.access.redhat.com/ubi9/go-toolset:1.18.9-2
         name: init
     - name: clone-repository
       params:
