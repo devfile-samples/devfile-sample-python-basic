@@ -70,7 +70,7 @@ spec:
       description: Execute the build with network isolation
       name: hermetic
       type: string
-    - default: '{"type": "pip", "requirements_files": ["requirements.txt"]}'
+    - default: "pip"
       description: Build dependencies to be prefetched by Cachi2
       name: prefetch-input
       type: string
