@@ -19,6 +19,10 @@ spec:
             - name: http
               containerPort: 8081
               protocol: TCP
+          resource:
+            requests:
+              memory: "50Mi"
+              cpu: "10m"
 ---
 kind: Service
 apiVersion: v1
