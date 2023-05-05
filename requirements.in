@@ -1,0 +1,6 @@
+setuptools==67.7.2
+Flask==2.1.0
+wheel
+flit_core<4,>=3.8
+importlib-metadata
+setuptools_scm[toml]>=3.4.1

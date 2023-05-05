@@ -10,11 +10,6 @@ WORKDIR /projects
 # Copy the dependencies file to the working directory
 COPY requirements.txt .
 
-# Update dependencies
-USER 0
-RUN dnf -y update
-USER 1000
-
 # Install any dependencies
 RUN pip install -r requirements.txt
 
