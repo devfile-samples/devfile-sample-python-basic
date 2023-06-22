@@ -50,7 +50,7 @@ spec:
       - name: build-task-status
         value: $(tasks.build-container.status)
       taskRef:
-        bundle: quay.io/redhat-appstudio-tekton-catalog/task-summary:0.1@sha256:303f8e8fb23cfe651574acce03593b21fcd2e332dc2b7fb88b290d4546479449
+        bundle: quay.io/redhat-appstudio-tekton-catalog/task-summary:0.1@sha256:b64481e089c450fdce8c05c69cacd08975c0f24d10be613a2e3365a113fc8857
         name: summary
     params:
     - description: Source Repository URL
