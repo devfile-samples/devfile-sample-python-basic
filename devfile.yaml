@@ -16,7 +16,7 @@ metadata:
     - Flask
   supportUrl: https://github.com/devfile-samples/devfile-support#support-information
   attributes:
-    alpha.dockerimage-port: 8081
+    alpha.dockerimage-port: 8081 # and not 8080
 parent:
   id: python
   registryUrl: 'https://registry.devfile.io'
