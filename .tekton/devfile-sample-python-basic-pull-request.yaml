@@ -11,11 +11,11 @@ metadata:
     pipelinesascode.tekton.dev/on-target-branch: '[main]'
   creationTimestamp: null
   labels:
-    appstudio.openshift.io/application: devfile-sample-python-basic
+    appstudio.openshift.io/application: test-application
     appstudio.openshift.io/component: devfile-sample-python-basic
     pipelines.appstudio.openshift.io/type: build
   name: devfile-sample-python-basic-on-pull-request
-  namespace: exd-rcerven-tenant
+  namespace: default
 spec:
   params:
   - name: dockerfile
@@ -25,7 +25,7 @@ spec:
   - name: image-expires-after
     value: 5d
   - name: output-image
-    value: quay.io/redhat-user-workloads-stage/exd-rcerven-tenant/devfile-sample-python-basic/devfile-sample-python-basic:on-pr-{{revision}}
+    value: quay.io/mkosiarc_rhtap/default/test-application/devfile-sample-python-basic:on-pr-{{revision}}
   - name: path-context
     value: .
   - name: revision
@@ -60,7 +60,7 @@ spec:
         - name: name
           value: summary
         - name: bundle
-          value: quay.io/redhat-appstudio-tekton-catalog/task-summary:0.1@sha256:9d43202379cb83358942ce2e936c0297e30faaa0c73811324318c6260a6edc25
+          value: quay.io/redhat-appstudio-tekton-catalog/task-summary:0.1@sha256:e69f53a3991d7088d8aa2827365ab761ab7524d4269f296b4a78b0f085789d30
         - name: kind
           value: task
         resolver: bundles
@@ -76,13 +76,11 @@ spec:
       name: output-image
       type: string
     - default: .
-      description: Path to the source code of an application's component from where
-        to build image.
+      description: The path to your source code
       name: path-context
       type: string
     - default: Dockerfile
-      description: Path to the Dockerfile inside the context specified by parameter
-        path-context
+      description: Path to the Dockerfile
       name: dockerfile
       type: string
     - default: "false"
@@ -226,7 +224,7 @@ spec:
         - name: name
           value: buildah
         - name: bundle
-          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah:0.1@sha256:97f21661e237735af04b37feeeaedd328424bfa0ebd4cd0f79ac39cde17137f6
+          value: quay.io/redhat-appstudio-tekton-catalog/task-buildah:0.1@sha256:ebbf3859d0fe10e655dd9df47a1133157d0f2d11ea2faa7d060df0f9268e2a4e
         - name: kind
           value: task
         resolver: bundles
@@ -272,7 +270,7 @@ spec:
         - name: name
           value: deprecated-image-check
         - name: bundle
-          value: quay.io/redhat-appstudio-tekton-catalog/task-deprecated-image-check:0.3@sha256:0f62d3583a2aad17af1e8af511751701a926bf53835574d47781a40945b59381
+          value: quay.io/redhat-appstudio-tekton-catalog/task-deprecated-image-check:0.2@sha256:58d16de95b4ca597f7f860fb85d6206e549910fa7a8d2a2cc229558f791ad329
         - name: kind
           value: task
         resolver: bundles
@@ -281,6 +279,9 @@ spec:
         operator: in
         values:
         - "false"
+      workspaces:
+      - name: test-ws
+        workspace: workspace
     - name: clair-scan
       params:
       - name: image-digest
@@ -294,7 +295,7 @@ spec:
         - name: name
           value: clair-scan
         - name: bundle
-          value: quay.io/redhat-appstudio-tekton-catalog/task-clair-scan:0.1@sha256:d9ac3dfb3537b6061599337c103f07cd508751f5c5dc24f30632ea25c136aca8
+          value: quay.io/redhat-appstudio-tekton-catalog/task-clair-scan:0.1@sha256:c5602d9d6dd797da98e98fde8471ea55a788c30f74f2192807910ce5436e9b66
         - name: kind
           value: task
         resolver: bundles
@@ -311,7 +312,7 @@ spec:
         - name: name
           value: sast-snyk-check
         - name: bundle
-          value: quay.io/redhat-appstudio-tekton-catalog/task-sast-snyk-check:0.1@sha256:dbddd5c8d413245cdd5f9666cf5129e43f5841ddece3fdf57d7dc18bf8fd988a
+          value: quay.io/redhat-appstudio-tekton-catalog/task-sast-snyk-check:0.1@sha256:9dcd450b454705b9fe22c5f8f7bb7305cebc3cb73e783b85e047f7e721994189
         - name: kind
           value: task
         resolver: bundles
