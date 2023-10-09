@@ -8,7 +8,7 @@ metadata:
     'Python is an interpreted, object-oriented, high-level programming language with dynamic semantics.
     Its high-level built in data structures, combined with dynamic typing and dynamic binding, make it very attractive for Rapid Application Development, as well as for use as a scripting or glue language to connect existing components together.'
   language: Python
-  version: 1.0.1
+  version: 1.0.2
   provider: Red Hat
   tags:
     - Python
@@ -20,33 +20,14 @@ metadata:
 parent:
   id: python
   registryUrl: 'https://registry.devfile.io'
-components:
-  - name: image-build
-    image:
-      imageName: python-image:latest
-      dockerfile:
-        uri: docker/Dockerfile
-        buildContext: .
-        rootRequired: false
-  - name: kubernetes-deploy
-    attributes:
-      deployment/replicas: 1
-      deployment/cpuRequest: 10m
-      deployment/memoryRequest: 50Mi
-      deployment/container-port: 8081
-    kubernetes:
-      uri: deploy.yaml
-      endpoints:
-      - name: http-8081
-        targetPort: 8081
-        path: /
-commands:
+  version: 3.0.0
+  commands:
   - id: build-image
     apply:
-      component: image-build
+      component: build
   - id: deployk8s
     apply:
-      component: kubernetes-deploy
+      component: deploy
   - id: deploy
     composite:
       commands:
@@ -55,3 +36,24 @@ commands:
       group:
         kind: deploy
         isDefault: true
+  components:
+  - name: build
+    image:
+      imageName: python-image:latest
+      dockerfile:
+        uri: docker/Dockerfile
+        buildContext: .
+        rootRequired: false
+  - name: deploy
+    attributes:
+      deployment/replicas: 1
+      deployment/cpuRequest: 10m
+      deployment/memoryRequest: 50Mi
+      deployment/container-port: 8080
+    kubernetes:
+      uri: kubernetes/deploy.yaml
+      endpoints:
+      - name: http-8080
+        targetPort: 8080
+        path: /
+
