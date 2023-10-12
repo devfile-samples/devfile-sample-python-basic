@@ -6,15 +6,73 @@ spec:
   params:
   - name: username
     default: world
+  workspaces:
+  - name: cluster-credentials
+    optional: true
   tasks:
     - name: task-1
       params:
-      - name: username
-        value: $(params.username)
+      - name: SNAPSHOT
+        description: Expected output of the application endpoint
+      - default: 'default'
+        name: NAMESPACE
+        description: Namespace of the application under test
+      - default: "Hello World!"
+        name: EXPECTED_OUTPUT
+        description: Expected output of the application endpoint
+      - default: ""
+        name: PORT
+      description: Application endpoint Port
       taskSpec:
         params:
         - name: username
+        results:
+        - name: TEST_OUTPUT
+          description: Test output
+        workspaces:
+        - name: cluster-credentials
+          workspace: cluster-credentials
         steps:
         - image: alpine:3.15
+          env:
+          - name: SNAPSHOT
+            value: $(params.SNAPSHOT)
+          - name: NAMESPACE
+            value: $(params.NAMESPACE)
+          - name: EXPECTED_OUTPUT
+            value: $(params.EXPECTED_OUTPUT)
+          - name: PORT
+            value: $(params.PORT)
           script: |
-            echo "hello $(params.username)"
+            export KUBECONFIG=$(workspaces.cluster-credentials.path)/kubeconfig
+
+            # Get the route for the application endpoint
+            COMPONENT_NAME=$(echo -n ${SNAPSHOT} | jq -r .components[0].name)
+            ROUTE_NAME=$(oc get routes -l app.kubernetes.io/name="${COMPONENT_NAME}" -o name)
+            HOST=$(oc get "${ROUTE_NAME}" -o jsonpath={.spec.host} -n "${NAMESPACE}")
+            echo "Found target host ${HOST} for app ${APPLICATION_NAME}"
+
+            # Wait up to 5 minutes for the endpoint output to match the expected output
+            for _ in $(seq 1 60); do
+              echo "Checking https://${HOST}:${PORT}"
+              # Check the application endpoint
+              ENDPOINT_OUTPUT=$(curl https://${HOST}:${PORT})
+
+              if [[ "${ENDPOINT_OUTPUT}" == "${EXPECTED_OUTPUT}" ]]; then
+                RESULT="SUCCESS"
+                break
+              else
+                RESULT="FAILURE"
+              fi
+              sleep 5
+            done
+
+            echo -e "The endpoint outputs the following:\n ${ENDPOINT_OUTPUT}"
+            echo -e "Expected endpoint output:\n ${EXPECTED_OUTPUT}"
+
+            TEST_OUTPUT=$(jq -rc --arg date $(date +%s) --arg RESULT "${RESULT}" --null-input \
+              '{result: $RESULT, timestamp: $date, failures: 0, successes: 0, warnings: 0}')
+            echo -n "${TEST_OUTPUT}" | tee $(results.TEST_OUTPUT.path)
+      workspaces:
+        - name: cluster-credentials
+          optional: true
