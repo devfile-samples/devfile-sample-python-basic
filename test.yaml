@@ -61,6 +61,13 @@ spec:
           script: |
             export KUBECONFIG=$(workspaces.cluster-credentials.path)/kubeconfig
 
+            echo "Hi!"
+            echo $KUBECONFIG
+            echo $SNAPSHOT
+            echo $ROUTE_NAME
+            echo $APPLICATION_NAME
+            echo $HOST
+
             # Get the route for the application endpoint
             COMPONENT_NAME=$(echo -n ${SNAPSHOT} | jq -r .components[0].name)
             ROUTE_NAME=$(oc get routes -l app.kubernetes.io/name="${COMPONENT_NAME}" -o name)
