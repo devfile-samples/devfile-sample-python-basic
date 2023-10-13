@@ -14,7 +14,7 @@ spec:
       type: string
     - description: 'Expected output'
       name: EXPECTED_OUTPUT
-      default: "Hello World"
+      default: "Hello World!"
       type: string
     - description: 'Application endpoint port'
       name: PORT
