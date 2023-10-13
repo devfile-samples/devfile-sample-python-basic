@@ -4,28 +4,43 @@ metadata:
   name: example-pipeline
 spec:
   params:
-  - name: username
-    default: world
+    - description: 'Snapshot of the application'
+      name: SNAPSHOT
+      default: '{"components": [{"name":"test-app", "containerImage": "quay.io/example/repo:latest"}]}'
+      type: string
+    - description: 'Namespace where the application is running'
+      name: NAMESPACE
+      default: "default"
+      type: string
+    - description: 'Expected output'
+      name: EXPECTED_OUTPUT
+      default: "Hello World"
+      type: string
+    - description: 'Application endpoint port'
+      name: PORT
+      default: ""
+      type: string
   workspaces:
   - name: cluster-credentials
     optional: true
   tasks:
     - name: task-1
-      params:
-      - name: SNAPSHOT
-        description: Expected output of the application endpoint
-      - default: 'default'
-        name: NAMESPACE
-        description: Namespace of the application under test
-      - default: "Hello World!"
-        name: EXPECTED_OUTPUT
-        description: Expected output of the application endpoint
-      - default: ""
-        name: PORT
       description: Application endpoint Port
+      params:
+        - name: SNAPSHOT
+          value: $(params.SNAPSHOT)
+        - name: NAMESPACE
+          value: $(params.NAMESPACE)
+        - name: EXPECTED_OUTPUT
+          value: $(params.EXPECTED_OUTPUT)
+        - name: PORT
+          value: $(params.PORT)
       taskSpec:
         params:
-        - name: username
+        - name: SNAPSHOT
+        - name: NAMESPACE
+        - name: EXPECTED_OUTPUT
+        - name: PORT
         results:
         - name: TEST_OUTPUT
           description: Test output
