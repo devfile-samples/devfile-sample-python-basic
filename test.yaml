@@ -71,9 +71,9 @@ spec:
 
             # Wait up to 5 minutes for the endpoint output to match the expected output
             for _ in $(seq 1 60); do
-              echo "Checking https://${HOST}:${PORT}"
+              echo "Checking http://${HOST}:${PORT}"
               # Check the application endpoint
-              ENDPOINT_OUTPUT=$(curl -s https://${HOST}:${PORT})
+              ENDPOINT_OUTPUT=$(curl -s http://${HOST}:${PORT})
 
               if [[ "${ENDPOINT_OUTPUT}" == "${EXPECTED_OUTPUT}" ]]; then
                 RESULT="SUCCESS"
