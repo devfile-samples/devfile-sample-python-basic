@@ -48,7 +48,7 @@ spec:
         - name: cluster-credentials
           workspace: cluster-credentials
         steps:
-        - image: registry.access.redhat.com/ubi9/ubi-minimal:latest
+        - image: registry.access.redhat.com/ubi9/ubi:latest
           env:
           - name: SNAPSHOT
             value: $(params.SNAPSHOT)
