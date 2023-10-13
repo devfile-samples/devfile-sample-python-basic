@@ -48,7 +48,7 @@ spec:
         - name: cluster-credentials
           workspace: cluster-credentials
         steps:
-        - image: quay.io/redhat-appstudio/hacbs-test:latest
+        - image: alpine:3.15
           env:
           - name: SNAPSHOT
             value: $(params.SNAPSHOT)
