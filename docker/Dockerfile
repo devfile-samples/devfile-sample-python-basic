@@ -10,7 +10,7 @@ WORKDIR /projects
 # Copy the content of the local src directory to the working directory
 COPY . .
 
-# Install any dependencies
+# Install any dependencies with pip
 RUN \
   if [ -f requirements.txt ]; \
     then pip install -r requirements.txt; \
