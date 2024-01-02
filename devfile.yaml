@@ -22,16 +22,17 @@ parent:
   registryUrl: 'https://registry.devfile.io'
   version: 3.0.0
   components:
-  - name: deploy
-    attributes:
-      deployment/replicas: 1
-      deployment/cpuRequest: 10m
-      deployment/memoryRequest: 50Mi
-      deployment/container-port: 8080
-    kubernetes:
-      uri: kubernetes/deploy.yaml
-      endpoints:
-      - name: http-8080
-        targetPort: 8080
-        path: /
+    - name: deploy
+      attributes:
+        deployment/replicas: 1
+        deployment/cpuRequest: 10m
+        deployment/memoryRequest: 50Mi
+        deployment/container-port: 8080
+      kubernetes:
+        uri: kubernetes/deploy.yaml
+        endpoints:
+          - name: http-8080
+            targetPort: 8080
+            path: /
+            secure: true
 
