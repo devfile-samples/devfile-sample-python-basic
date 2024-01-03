@@ -37,9 +37,10 @@ components:
     kubernetes:
       uri: deploy.yaml
       endpoints:
-      - name: http-8081
-        targetPort: 8081
-        path: /
+        - name: http-8081
+          targetPort: 8081
+          path: /
+          secure: true
 commands:
   - id: build-image
     apply:
