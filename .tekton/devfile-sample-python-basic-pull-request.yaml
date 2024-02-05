@@ -113,6 +113,10 @@ spec:
       description: Build a source image.
       name: build-source-image
       type: string
+    - default: "true"
+      description: Build a source image.
+      name: my-new-param
+      type: string
     results:
     - description: ""
       name: IMAGE_URL
@@ -135,7 +139,7 @@ spec:
       - name: image-url
         value: $(params.output-image)
       - name: rebuild
-        value: $(params.rebuild)
+        value: "true"
       - name: skip-checks
         value: $(params.skip-checks)
       taskRef:
