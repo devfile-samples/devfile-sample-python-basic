@@ -4,17 +4,16 @@ metadata:
   annotations:
     build.appstudio.openshift.io/repo: https://github.com/rcerven/devfile-sample-python-basic?rev={{revision}}
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
-    build.appstudio.redhat.com/pull_request_number: '{{pull_request_number}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-cel-expression: event == "pull_request" && target_branch
+    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
       == "main"
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: devfile-sample-python-basic
     appstudio.openshift.io/component: devfile-sample-python-basic
     pipelines.appstudio.openshift.io/type: build
-  name: devfile-sample-python-basic-on-pull-request
+  name: devfile-sample-python-basic-on-push
   namespace: exd-rcerven-tenant
 spec:
   params:
@@ -22,10 +21,8 @@ spec:
     value: docker/Dockerfile
   - name: git-url
     value: '{{source_url}}'
-  - name: image-expires-after
-    value: 5d
   - name: output-image
-    value: quay.io/redhat-user-workloads/exd-rcerven-tenant/devfile-sample-python-basic/devfile-sample-python-basic:on-pr-{{revision}}
+    value: quay.io/redhat-user-workloads/exd-rcerven-tenant/devfile-sample-python-basic/devfile-sample-python-basic:{{revision}}
   - name: path-context
     value: .
   - name: revision
