@@ -132,10 +132,10 @@ spec:
     tasks:
     - name: init
       params:
-      - name: rebuild
-        value: "true"
       - name: image-url
         value: $(params.output-image)
+      - name: rebuild
+        value: $(params.rebuild)
       - name: skip-checks
         value: $(params.skip-checks)
       taskRef:
