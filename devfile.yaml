@@ -17,9 +17,6 @@ metadata:
   supportUrl: https://github.com/devfile-samples/devfile-support#support-information
   attributes:
     alpha.dockerimage-port: 8081
-parent:
-  id: python
-  registryUrl: 'https://registry.devfile.io'
 components:
   - name: image-build
     image:
