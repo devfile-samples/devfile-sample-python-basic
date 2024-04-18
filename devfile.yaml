@@ -20,6 +20,7 @@ metadata:
 parent:
   id: python
   registryUrl: 'https://registry.devfile.io'
+  version: 2.1.0
 components:
   - name: image-build
     image:
