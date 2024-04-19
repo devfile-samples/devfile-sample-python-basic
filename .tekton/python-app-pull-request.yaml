@@ -448,20 +448,166 @@ spec:
             value: $(tasks.build-container.results.IMAGE_URL)
         runAfter:
           - build-container
-        taskRef:
-          params:
-            - name: name
-              value: clamav-scan
-            - name: bundle
-              value: quay.io/redhat-appstudio-tekton-catalog/task-clamav-scan:0.1@sha256:628847d30ce0dc05ce9c62ae1161ba54d27de125b59e867d485ca0e0c68e11e4
-            - name: kind
-              value: task
-          resolver: bundles
         when:
           - input: $(params.skip-checks)
             operator: in
             values:
               - "false"
+        taskSpec:
+          apiVersion: tekton.dev/v1
+          kind: Task
+          metadata:
+            annotations:
+              tekton.dev/pipelines.minVersion: 0.12.1
+              tekton.dev/tags: virus, appstudio, hacbs
+            labels:
+              app.kubernetes.io/version: "0.1"
+            name: clamav-scan
+          spec:
+            description: Scans the content of container images for viruses, malware, and other malicious content using ClamAV antivirus scanner.
+            params:
+              - description: Image digest to scan.
+                name: image-digest
+              - description: Image URL.
+                name: image-url
+              - default: ""
+                description: unused
+                name: docker-auth
+            results:
+              - description: Tekton task test output.
+                name: TEST_OUTPUT
+              - description: Images processed in the task.
+                name: IMAGES_PROCESSED
+            sidecars:
+              - image: quay.io/redhat-appstudio/clamav-db:v1
+                imagePullPolicy: Always
+                name: database
+                script: |
+                  #!/usr/bin/env bash
+                  clamscan --version
+                  cp -r /var/lib/clamav/* /tmp/clamdb
+                volumeMounts:
+                  - mountPath: /tmp/clamdb
+                    name: dbfolder
+            steps:
+              - computeResources:
+                  limits:
+                    memory: 4Gi
+                  requests:
+                    cpu: 10m
+                    memory: 512Mi
+                env:
+                  - name: HOME
+                    value: /work
+                  - name: IMAGE_URL
+                    value: $(params.image-url)
+                  - name: IMAGE_DIGEST
+                    value: $(params.image-digest)
+                image: quay.io/redhat-appstudio/hacbs-test:v1.3.4@sha256:b909fe6111e04169742e23a5e515aa549aa8c09ce0348f4560ae83d3c174a15a
+                name: extract-and-scan-image
+                script: |
+                  #!/usr/bin/env bash
+                  set -euo pipefail
+                  . /utils.sh
+                  trap 'handle_error' EXIT
+
+                  imagewithouttag=$(echo $IMAGE_URL | sed "s/\\(.*\\):.*/\\1/" | tr -d '\
+                  ')
+
+                  # strip new-line escape symbol from parameter and save it to variable
+                  imageanddigest=$(echo $imagewithouttag@$IMAGE_DIGEST)
+
+                  # check if image is attestation one, skip the clamav scan in such case
+                  if [[ $imageanddigest == *.att ]]
+                  then
+                      echo "$imageanddigest is an attestation image. Skipping ClamAV scan."
+                      exit 0
+                  fi
+
+                  images_processed_template='{"image": {"pullspec": "'"$IMAGE_URL"'", "digests": [%s]}}'
+                  digests_processed=()
+                  mkdir content
+                  cd content
+                  echo "Extracting image(s)."
+
+                  # Get the arch and image manifests by inspecting the image. This is mainly for identifying image indexes
+                  image_manifests=$(get_image_manifests -i ${imageanddigest})
+                  if [ -n "$image_manifests" ]; then
+                    while read -r arch arch_sha; do
+                      destination=$(echo content-$arch)
+                      mkdir -p "$destination"
+                      arch_imageanddigest=$(echo $imagewithouttag@$arch_sha)
+
+                      echo "Running \\"oc image extract\\" on image of arch $arch"
+                      oc image extract --registry-config ~/.docker/config.json $arch_imageanddigest --path="/:${destination}" --filter-by-os="linux/${arch}"
+                      if [ $? -ne 0 ]; then
+                        echo "Unable to extract image for arch $arch. Skipping ClamAV scan!"
+                        exit 0
+                      fi
+
+                      echo "Scanning image for arch $arch. This operation may take a while."
+                      clamscan $destination -ri --max-scansize=4095M --max-filesize=4095M \\
+                        --max-scantime=0 --max-files=0 --max-recursion=1000 --max-dir-recursion=20000 --max-embeddedpe=4095M \\
+                        --max-htmlnormalize=10M --max-htmlnotags=4095M --max-scriptnormalize=5M --max-ziptypercg=4095M \\
+                        --max-partitions=50000 --max-iconspe=100000 --max-rechwp3=20000 --pcre-match-limit=100000000 --pcre-recmatch-limit=2000000 \\
+                        --pcre-max-filesize=4095M --alert-exceeds-max=yes \\
+                        --alert-encrypted=yes --alert-encrypted-archive=yes --alert-encrypted-doc=yes --alert-macros=yes \\
+                        --alert-phishing-ssl=yes --alert-phishing-cloak=yes --alert-partition-intersection=yes \\
+                        | tee /tekton/home/clamscan-result-$arch.log || true
+                      echo "Executed-on: Scan was executed on version - $(clamscan --version)" | tee -a /tekton/home/clamscan-result-$arch.log
+
+                      digests_processed+=("\\"$arch_sha\\"")
+
+                      if [[ -e "/tekton/home/clamscan-result-$arch.log" ]]; then
+                        # file_suffix=$(basename "$file" | sed 's/clamscan-result-//;s/.log//')
+                        # OPA/EC requires structured data input, add clamAV log into json
+                        jq -Rs '{ output: . }' /tekton/home/clamscan-result-$arch.log \u003e /tekton/home/clamscan-result-log-$arch.json
+
+                        EC_EXPERIMENTAL=1 ec test \\
+                          --namespace required_checks \\
+                          --policy /project/clamav/virus-check.rego \\
+                          -o json \\
+                          /tekton/home/clamscan-result-log-$arch.json || true
+
+                        # workaround: due to a bug in ec-cli, we cannot generate json and appstudio output at the same time, running it again
+                        EC_EXPERIMENTAL=1 ec test \\
+                          --namespace required_checks \\
+                          --policy /project/clamav/virus-check.rego \\
+                          -o appstudio \\
+                          /tekton/home/clamscan-result-log-$arch.json | tee /tekton/home/clamscan-ec-test-$arch.json || true
+
+                        cat /tekton/home/clamscan-ec-test-$arch.json
+                      fi
+                    done \u003c \u003c(echo "$image_manifests" | jq -r 'to_entries[] | "\\(.key) \\(.value)"')
+                  fi
+
+                  jq -s -rce '
+                    reduce .[] as $item ({"timestamp":"0","namespace":"","successes":0,"failures":0,"warnings":0,"result":"","note":""};
+                      {
+                      "timestamp" : (if .timestamp \u003c $item.timestamp then $item.timestamp else .timestamp end),
+                      "namespace" : $item.namespace,
+                      "successes" : (.successes + $item.successes),
+                      "failures" : (.failures + $item.failures),
+                      "warnings" : (.warnings + $item.warnings),
+                      "result" : (if .result == "" or ($item.result == "SKIPPED" and .result == "SUCCESS") or ($item.result == "WARNING" and (.result == "SUCCESS" or .result == "SKIPPED")) or ($item.result == "FAILURE" and .result != "ERROR") or $item.result == "ERROR" then $item.result else .result end),
+                      "note" : (if .result == "" or ($item.result == "SKIPPED" and .result == "SUCCESS") or ($item.result == "WARNING" and (.result == "SUCCESS" or .result == "SKIPPED")) or ($item.result == "FAILURE" and .result != "ERROR") or $item.result == "ERROR" then $item.note else .note end)
+                      })' /tekton/home/clamscan-ec-test-*.json | tee $(results.TEST_OUTPUT.path)
+
+                  digests_processed_string=$(IFS=,; echo "${digests_processed[*]}")
+                  echo "${images_processed_template/\\[%s]/[$digests_processed_string]}" | tee $(results.IMAGES_PROCESSED.path)
+                securityContext:
+                  runAsUser: 1000
+                volumeMounts:
+                  - mountPath: /var/lib/clamav
+                    name: dbfolder
+                  - mountPath: /work
+                    name: work
+                workingDir: /work
+            volumes:
+              - emptydir: {}
+                name: dbfolder
+              - emptydir: {}
+                name: work
       - name: sbom-json-check
         params:
           - name: IMAGE_URL
