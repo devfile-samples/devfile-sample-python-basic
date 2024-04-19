@@ -338,7 +338,6 @@ spec:
               - "false"
       - name: sast-snyk-check
         runAfter:
-          - clone-repository
           - build-container
         params:
           - name: image-digest
