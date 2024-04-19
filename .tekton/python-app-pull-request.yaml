@@ -398,6 +398,15 @@ spec:
                   . /utils.sh
                   trap 'handle_error $(results.TEST_OUTPUT.path)' EXIT
 
+                  imagewithouttag=$(echo $IMAGE_URL | sed "s/\\(.*\\):.*/\\1/" | tr -d '\
+                  ')
+
+                  # strip new-line escape symbol from parameter and save it to variable
+                  imageanddigest=$(echo $imagewithouttag@$IMAGE_DIGEST)
+
+                  echo $imageanddigest
+                  exit 2
+
                   SNYK_TOKEN_PATH="/etc/secrets/snyk_token"
 
                   if [ -f "${SNYK_TOKEN_PATH}" ] \u0026\u0026 [ -s "${SNYK_TOKEN_PATH}" ]; then
