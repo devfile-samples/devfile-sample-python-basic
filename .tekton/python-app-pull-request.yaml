@@ -421,6 +421,7 @@ spec:
                     ERROR_OUTPUT=$(make_result_json -r ERROR -t "$note")
                   fi
                   echo "${TEST_OUTPUT:-${ERROR_OUTPUT}}" | tee $(results.TEST_OUTPUT.path)
+                  echo testing...
                 volumeMounts:
                   - mountPath: /etc/secrets
                     name: snyk-secret
