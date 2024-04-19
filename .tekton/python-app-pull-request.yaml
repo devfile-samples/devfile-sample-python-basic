@@ -366,6 +366,10 @@ spec:
           spec:
             description: Scans source code for security vulnerabilities, including common issues such as SQL injection, cross-site scripting (XSS), and code injection attacks using Snyk Code, a Static Application Security Testing (SAST) tool.
             params:
+              - description: Image digest to scan.
+                name: image-digest
+              - description: Image URL.
+                name: image-url
               - default: snyk-secret
                 description: Name of secret which contains Snyk token.
                 name: SNYK_SECRET
@@ -382,6 +386,10 @@ spec:
                     value: $(params.SNYK_SECRET)
                   - name: ARGS
                     value: $(params.ARGS)
+                  - name: IMAGE_URL
+                    value: $(params.image-url)
+                  - name: IMAGE_DIGEST
+                    value: $(params.image-digest)
                 image: quay.io/redhat-appstudio/hacbs-test:v1.3.0@sha256:cd4601a7d71ebd908046db7a9b7010611b8b372fe941664d5163c81250a1a1fc
                 name: sast-snyk-check
                 script: |
