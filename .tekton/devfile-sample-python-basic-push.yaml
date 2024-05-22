@@ -316,6 +316,12 @@ spec:
         operator: in
         values:
         - "false"
+
+    - name: test
+      runAfter:
+      - build-container
+
+
     - name: ecosystem-cert-preflight-checks
       params:
       - name: image-url
