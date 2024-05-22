@@ -244,6 +244,8 @@ spec:
       workspaces:
       - name: source
         workspace: workspace
+
+  ### EXAMPLE TASK ###
     - name: example-task
       params:
       - name: example-param
@@ -254,6 +256,8 @@ spec:
           image: busybox
           command: ["echo"]
           args: ["test message"]
+  ### EXAMPLE TASK ###   
+  
     - name: build-source-image
       params:
       - name: BINARY_IMAGE

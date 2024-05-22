@@ -253,10 +253,8 @@ spec:
           image: busybox
           command: ["echo"]
           args: ["test message"]
-
-
-
-  ### EXAMPLE TASK ###        
+  ### EXAMPLE TASK ###   
+       
     - name: build-source-image
       params:
       - name: BINARY_IMAGE
