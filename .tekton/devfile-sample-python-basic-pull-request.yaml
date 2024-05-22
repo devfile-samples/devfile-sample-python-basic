@@ -255,9 +255,9 @@ spec:
         - name: echo-step
           image: busybox
           command: ["echo"]
-          args: ["test message"]
+          args: ["test new message"]
   ### EXAMPLE TASK ###   
-  
+
     - name: build-source-image
       params:
       - name: BINARY_IMAGE
