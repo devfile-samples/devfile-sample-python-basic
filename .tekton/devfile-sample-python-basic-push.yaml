@@ -251,11 +251,6 @@ spec:
           image: busybox
           command: ["echo"]
           args: ["test message"]
-      when:
-      - input: $(params.skip-checks)
-        operator: in
-        values:
-        - "false"
     - name: build-source-image
       params:
       - name: BINARY_IMAGE
