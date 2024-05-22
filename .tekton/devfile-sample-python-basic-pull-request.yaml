@@ -244,6 +244,30 @@ spec:
       workspaces:
       - name: source
         workspace: workspace
+
+    - name: example-task
+      params:
+      - name: example-param
+        value: “Example”
+      runAfter:
+      - build-container #You can be more specific by choosing another task
+      taskRef:
+        params:
+        - name: name
+          value: example-task # metadata.name field of the Task
+        - name: bundle
+          value: quay.io/tekton-bundle-catalog/example-task-bundle:1.0
+          # For more details on tekton bundles, refer https://tekton.dev/docs/pipelines/pipelines/#tekton-bundles
+        - name: kind
+          value: task
+        resolver: bundles
+      when:
+      - input: $(params.skip-checks)    #This references the pipeline parameters
+        operator: in
+        values:
+        - "false"
+
+
     - name: build-source-image
       params:
       - name: BINARY_IMAGE
