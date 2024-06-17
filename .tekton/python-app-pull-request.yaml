@@ -351,7 +351,7 @@ spec:
         - name: name
           value: sast-snyk-check
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-sast-snyk-check:0.1@sha256:30b59fff49f73b8b4aa2e622ad095970674b2fd46924f12d26e32ca39443ba8e
+          value: quay.io/rbean/task-sast-snyk-check:0.1@sha256:5771363f5847cd169d8dc8721df3dfa43be01f086b17489b801b9f7d6907607f
         - name: kind
           value: task
         resolver: bundles
@@ -376,7 +376,7 @@ spec:
         - name: name
           value: clamav-scan
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-clamav-scan:0.1@sha256:ee0a3a13bc62b4f5cbd3d6adbe351bb414bf4d3b0d8d8d1829878103cfbe2656
+          value: quay.io/rbean/task-clamav-scan@sha256:8bba199a1e7f05723c05534550e2e539e2317a6ae103e82c100ecb0346451359
         - name: kind
           value: task
         resolver: bundles
