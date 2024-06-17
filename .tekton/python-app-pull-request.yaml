@@ -356,7 +356,7 @@ spec:
         - name: name
           value: sast-snyk-check
         - name: bundle
-          value: quay.io/rbean/task-sast-snyk-check:0.1@sha256:5771363f5847cd169d8dc8721df3dfa43be01f086b17489b801b9f7d6907607f
+          value: quay.io/rbean/task-sast-snyk-check:0.1@sha256:ba7857c3581f1ed9fe4ac446ad4856b069bb180741b6b2d220eea26dc8c23f52
         - name: kind
           value: task
         resolver: bundles
@@ -381,7 +381,7 @@ spec:
         - name: name
           value: clamav-scan
         - name: bundle
-          value: quay.io/rbean/task-clamav-scan@sha256:8bba199a1e7f05723c05534550e2e539e2317a6ae103e82c100ecb0346451359
+          value: quay.io/rbean/task-clamav-scan@sha256:21422fb8c976ec5e2e6c816fd1045b05a644667b6d982a971b121993f37c406a
         - name: kind
           value: task
         resolver: bundles
