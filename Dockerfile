@@ -1,3 +1,2 @@
-FROM registry.access.redhat.com/ubi9/ubi:latest
-
-# Nothing - just a fast build.
+FROM registry.redhat.io/rhel9/rhel-bootc:latest
+RUN getenforce
