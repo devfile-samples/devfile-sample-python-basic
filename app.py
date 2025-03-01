@@ -9,7 +9,7 @@ def hello():
 
 @app.route('/about')
 def about():
-    return jsonify({"how":"through openshift"})
+    return "about pyflask"
 
 if __name__ == '__main__':
     port = os.environ.get('FLASK_PORT') or 8080
