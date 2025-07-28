@@ -1,0 +1,88 @@
+name: Validate with Devfile Registry Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  MINIKUBE_VERSION: 'v1.29.0'
+  MINIKUBE_RESOURCES: '--memory 14gb --cpus 4'
+  KUBERNETES_VERSION: 'v1.25.2'
+  TEST_DELTA: false
+  REGISTRY_PATH: ${{ github.workspace }}/registry
+  GO_VERSION: '1.23'
+  GINKGO_VERSION: v2.19.0
+  YQ_VERSION: v4.44.1
+
+jobs:
+  validate-devfile-schema:
+    name: validate devfile schemas
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout current repo
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        path: current-repo
+
+    - name: Checkout devfile registry
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        repository: devfile/registry
+        path: ${{ env.REGISTRY_PATH }}
+    
+    - name: Setup Go
+      uses: actions/setup-go@3041bf56c941b39c61721a86cd11f3bb1338122a # v5.2.0
+      with:
+        go-version: ${{ env.GO_VERSION }}
+    
+    - name: Install yq
+      run: |
+        curl -sL -O https://github.com/mikefarah/yq/releases/download/${{ env.YQ_VERSION }}/yq_linux_amd64 -o /usr/local/bin/yq && mv ./yq_linux_amd64 /usr/local/bin/yq && chmod +x /usr/local/bin/yq
+
+    - name: Install Ginkgo
+      run: go install github.com/onsi/ginkgo/v2/ginkgo@${{ env.GINKGO_VERSION }}
+    
+    - name: Validate sample
+      run: (cd ${{ env.REGISTRY_PATH }} && bash tests/validate_devfile_schemas.sh --stacksPath ${{ github.workspace }} --stackDirs current-repo)
+
+  non-terminating:
+    name: check for non-terminating images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: current-repo
+          fetch-depth: 0
+      
+      - name: Checkout devfile registry
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: devfile/registry
+          path: ${{ env.REGISTRY_PATH }}
+      
+      - name: Setup Go
+        uses: actions/setup-go@3041bf56c941b39c61721a86cd11f3bb1338122a # v5.2.0
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Setup Minikube
+        uses: manusa/actions-setup-minikube@0e8062ceff873bd77979f39cf8fd3621416afe4d # v2.13.0
+        with:
+          minikube version: ${{ env.MINIKUBE_VERSION }}
+          kubernetes version: ${{ env.KUBERNETES_VERSION }}
+          driver: "docker"
+          github token: ${{ secrets.GITHUB_TOKEN }}
+          start args: "--addons=ingress ${{ env.MINIKUBE_RESOURCES }}"
+
+      - name: Check that containers components are non terminating
+        run: |
+          go build -C ${{ env.REGISTRY_PATH }}/tests/check_non_terminating -o flatten-parent
+          (cd ${{ env.REGISTRY_PATH }} && bash ${{ env.REGISTRY_PATH }}/tests/check_non_terminating.sh --stacksPath ${{ github.workspace }} --stackDirs current-repo)
