@@ -1,13 +1,22 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>devfile-samples/.github:renovate-config"],
-  "enabledManagers": ["pip_requirements", "dockerfile"],
+  "extends": [
+    "local>devfile-samples/.github:renovate-config"
+  ],
+  "enabledManagers": [
+    "pip_requirements",
+    "dockerfile"
+  ],
   "pip_requirements": {
-    "fileMatch": ["requirements\\.txt$"]
+    "managerFilePatterns": [
+      "/requirements\\.txt$/"
+    ]
   },
   "packageRules": [
     {
-      "matchManagers": ["pip_requirements"],
+      "matchManagers": [
+        "pip_requirements"
+      ],
       "groupName": "python dependencies",
       "groupSlug": "python-deps",
       "commitMessageTopic": "Python {{depName}}"
