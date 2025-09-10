@@ -26,6 +26,15 @@ spec:
     value: quay.io/brunop_konflux/build-test/devfile-sample-python-basic:{{revision}}
   - name: dockerfile
     value: docker/Dockerfile
+  taskRunSpecs:
+    - pipelineTaskName: build-container
+      stepSpecs:
+        - name: build
+          computeResources:
+            requests:
+              memory: 128m
+            limits:
+              memory: 254m
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while reducing network traffic.
