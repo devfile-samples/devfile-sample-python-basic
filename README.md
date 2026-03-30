@@ -18,3 +18,4 @@ Before you begin creating an application with this `devfile` code sample, it's h
 * For more information about Dockerfiles, see [Dockerfile reference](https://docs.docker.com/engine/reference/builder/).# Testing Smee Webhook
 # Testing webhook with secret
 # Testing fixed GitHub App auth
+# Testing PAT auth
