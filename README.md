@@ -19,3 +19,4 @@ Before you begin creating an application with this `devfile` code sample, it's h
 # Testing webhook with secret
 # Testing fixed GitHub App auth
 # Testing PAT auth
+# Testing with correct API URL
