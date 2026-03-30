@@ -20,3 +20,4 @@ Before you begin creating an application with this `devfile` code sample, it's h
 # Testing fixed GitHub App auth
 # Testing PAT auth
 # Testing with correct API URL
+# Testing with valid token
