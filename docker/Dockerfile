@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/python-39:1-1780319414
+FROM registry.access.redhat.com/ubi9/python-39:1-1781023981
 
 # By default, listen on port 8081
 EXPOSE 8081/tcp
