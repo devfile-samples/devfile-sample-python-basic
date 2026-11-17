@@ -10,7 +10,12 @@ def hello():
 
 @app.route('/healthy')
 def health():
-    return ""
+    return 200
+
+
+@app.route('/liveness')
+def liveness():
+    return 200
 
 
 @app.route('/fail')
