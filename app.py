@@ -23,10 +23,10 @@ def failing():
     abort(404)
 
 
-@app.route("/custom")
-def custom():
-    response = make_response("Custom OK", 200)
-    response.headers["X-Custom-Header"] = "Value"
+@app.route("/retry")
+def retry_after():
+    response = make_response("Too many requests", 429)
+    response.headers["Retry-After"] = "3"
     return response
 
 @app.route("/data")
