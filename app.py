@@ -30,10 +30,6 @@ def retry_after():
     response.headers["Retry-After"] = "3"
     return response
 
-@app.route("/data")
-def get_data():
-    body = jsonify({"error": "Too Many Requests", "retry_after": 2})
-    return body, 429, {"Retry-After": "2"}
 
 if __name__ == '__main__':
     port = os.environ.get('FLASK_PORT') or 8080
