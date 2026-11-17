@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask make_response
 import os
 
 app = Flask(__name__)
@@ -21,6 +21,13 @@ def liveness():
 @app.route('/fail')
 def failing():
     abort(404)
+
+
+@app.route("/custom")
+def custom():
+    response = make_response("Custom OK", 200)
+    response.headers["X-Custom-Header"] = "Value"
+    return response
 
 @app.route("/data")
 def get_data():
